@@ -5,10 +5,14 @@ import { ApolloServerPluginCacheControl } from 'apollo-server-core/dist/plugin/c
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { redisStore } from 'cache-manager-redis-yet';
 
+import * as KeyvRedis from '@keyv/redis';
+import Redis from 'ioredis';
 import * as Keyv from 'keyv';
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
+
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { GraphqlInterceptor, SentryModule } from '@ntegral/nestjs-sentry';
 
 import { Channel } from './channels/channels.entity';
 import { Message } from './messages/messages.entity';
@@ -16,8 +20,6 @@ import { ChannelsResolver } from './channels/channels.resolver';
 import { ChannelsService } from './channels/channels.service';
 import { MessagesService } from './messages/messages.service';
 import { MessageResolver } from './messages/messages.resolver';
-import * as KeyvRedis from '@keyv/redis';
-import Redis from 'ioredis';
 
 const redis: Redis = new Redis({
   port: parseInt(process.env.REDIS_PORT),
@@ -33,6 +35,10 @@ const keyvRedis = new KeyvRedis(redis);
     ChannelsResolver,
     MessagesService,
     MessageResolver,
+    {
+      provide: APP_INTERCEPTOR,
+      useFactory: () => new GraphqlInterceptor(),
+    },
   ],
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -62,6 +68,12 @@ const keyvRedis = new KeyvRedis(redis);
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Channel, Message]),
+    SentryModule.forRoot({
+      dsn: process.env.SENTRY_DSN,
+      debug: process.env.NODE_ENV === 'pro' ? false : true,
+      environment: process.env.NODE_ENV !== 'pro' ? 'production' : 'dev',
+      logLevels: ['debug'],
+    }),
   ],
 })
 export class AppModule implements OnModuleDestroy {

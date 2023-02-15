@@ -28,6 +28,8 @@
     "@nestjs/graphql": "^10.2.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^9.0.1",
+    "@ntegral/nestjs-sentry": "^4.0.0",
+    "@sentry/node": "^7.37.2",
     "apollo-server-express": "^3.11.1",
     "apollo-server-plugin-response-cache": "^3.8.1",
     "cache-manager-redis-yet": "^4.1.1",

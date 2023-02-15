@@ -20,7 +20,6 @@ export class ChannelsResolver {
     @Args('offset') offset = 0,
     @Args('limit') limit = 20,
   ): Promise<Channel[]> {
-    Logger.debug('Now get channels');
     return this.channelsService.find(offset, limit);
   }
 }
