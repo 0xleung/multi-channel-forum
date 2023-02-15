@@ -1,0 +1,63 @@
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"频道数据结构"
+type Channel {
+  id: ID!
+  "频道名"
+  name: String!
+}
+
+"频道消息数据结构"
+type Message {
+  id: ID!
+  "消息标题"
+  title: String!
+  "消息内容"
+  content: String!
+  "消息所属频道"
+  channel: Channel!
+  "消息创建时间"
+  createdAt: String!
+}
+
+type Query {
+  "获取频道列表"
+  channels(
+    "请求频道列表要跳过的数量, 默认0"
+    offset: Int = 0
+    "每页频道显示数量, 默认20"
+    limit: Int = 20
+  ): [Channel!]! @cacheControl(maxAge: 3)
+  "通过channelId分页获取消息列表"
+  messages(
+    "频道ID"
+    channelId: ID!
+    "请求消息要跳过的数量, 默认0"
+    offset: Int = 0
+    "每页消息数量,默认20"
+    limit: Int = 20
+  ): [Message!]! @cacheControl(maxAge: 3)
+}
+
+type Mutation {
+  "新建频道"
+  createChannel(name: String!): Channel!
+  "创建消息"
+  createMessage(
+    "消息标题"
+    title: String!
+    "消息内容"
+    content: String!
+    "消息所属频道的ID"
+    channelId: ID!
+  ): Message!
+}
