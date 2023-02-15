@@ -13,11 +13,15 @@ export class MessagesService {
     private channelsRepository: Repository<Channel>,
   ) {}
 
-  async createMessage(title: string, content: string, channelId: number): Promise<Message> {
+  async createMessage(
+    title: string,
+    content: string,
+    channelId: number,
+  ): Promise<Message> {
     const channel = await this.channelsRepository.findOne({
       where: {
-        id: channelId
-      }
+        id: channelId,
+      },
     });
 
     if (!channel) {
@@ -32,7 +36,11 @@ export class MessagesService {
     return this.messagesRepository.save(message);
   }
 
-  async getMessagesForChannel(channelId: number, offset: number, limit: number,): Promise<Message[]> {
+  async getMessagesForChannel(
+    channelId: number,
+    offset: number,
+    limit: number,
+  ): Promise<Message[]> {
     Logger.debug('offset', offset);
     return this.messagesRepository.find({
       where: { channel: { id: channelId } },

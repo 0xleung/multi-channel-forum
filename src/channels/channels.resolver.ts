@@ -16,8 +16,11 @@ export class ChannelsResolver {
 
   @Query(() => [Channel])
   @CacheControl({ maxAge: 3 })
-  async channels( @Args('offset') offset: number = 0, @Args('limit') limit: number = 20,): Promise<Channel[]> {
-    Logger.debug('Now get channels')
+  async channels(
+    @Args('offset') offset = 0,
+    @Args('limit') limit = 20,
+  ): Promise<Channel[]> {
+    Logger.debug('Now get channels');
     return this.channelsService.find(offset, limit);
   }
 }

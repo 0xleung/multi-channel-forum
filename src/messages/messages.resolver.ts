@@ -10,7 +10,11 @@ export class MessageResolver {
 
   @Query((returns) => [Message])
   @CacheControl({ maxAge: 3 })
-  async messages(@Args('channelId') channelId: number, @Args('offset') offset: number = 0, @Args('limit') limit: number = 20,): Promise<Message[]> {
+  async messages(
+    @Args('channelId') channelId: number,
+    @Args('offset') offset = 0,
+    @Args('limit') limit = 20,
+  ): Promise<Message[]> {
     Logger.debug('offset in resolver', offset, limit);
     return this.messageService.getMessagesForChannel(channelId, offset, limit);
   }
