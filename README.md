@@ -59,6 +59,12 @@ WARN[0000] The "TIMEZONE" variable is not set. Defaulting to a blank string.
  ⠿ Container multi-channel-forum-mysql-1  Running
 ```
 
+安装本地 npm 依赖
+
+```bash
+npm i
+```
+
 启动本地开发服务(graphql)
 
 ```bash
