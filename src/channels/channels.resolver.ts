@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CacheControl } from 'nestjs-gql-cache-control';
 
 import { Channel } from './channels.entity';
 import { ChannelsService } from './channels.service';
@@ -14,11 +15,9 @@ export class ChannelsResolver {
   }
 
   @Query(() => [Channel])
-  async channels(
-    @Args('offset') offset: number = 0,
-    @Args('limit') limit: number = 20,
-  ): Promise<Channel[]> {
-    Logger.debug('Now get channels');
+  @CacheControl({ maxAge: 3 })
+  async channels( @Args('offset') offset: number = 0, @Args('limit') limit: number = 20,): Promise<Channel[]> {
+    Logger.debug('Now get channels')
     return this.channelsService.find(offset, limit);
   }
 }

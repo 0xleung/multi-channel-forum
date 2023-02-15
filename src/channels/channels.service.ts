@@ -17,16 +17,8 @@ export class ChannelsService {
     return this.channelsRepository.save(channel);
   }
 
-  async findById(id: number): Promise<Channel> {
-    return this.channelsRepository.findOne({
-      where: {
-        id,
-      }
-    })
-  }
-
-  async find(offset: number, limit: number,): Promise<Channel[]> {
-    Logger.debug('Now get channels service')
+  async find(offset: number, limit: number): Promise<Channel[]> {
+    Logger.debug('Now get channels service');
     return this.channelsRepository.find({
       skip: offset,
       take: limit,

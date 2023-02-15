@@ -43,29 +43,20 @@ else
 	RUNNER := $(_DEVENV) run --rm --user $$UID:$$GID
 endif
 
-
-
-.PHONY: devenv-up
-devenv-up:
-	$(_DEVENV) up -d
-
-.PHONY: devenv-down
-devenv-down: ## debug all devenv services with docker compose up -d
-	$(_DEVENV) down -v --remove-orphans
-
-devenv-logs: ## follow all devenv services logs
-	$(_DEVENV) logs -f
-devenv-ps:
-	$(_DEVENV) ps
-
-.PHONY: devenv-graphql-server
-devenv-graphql-server:
-	$(RUNNER) graphql-server sh -c "npm start"
-
 run-local-graphql-server:
 	source scripts/export-env.sh $$ENV_FILE;\
 	source scripts/export-env.sh $$DEVENV_FILE;\
 	npm start
+
+test-local-graphql-server:
+	source scripts/export-env.sh $$ENV_FILE;\
+	source scripts/export-env.sh $$DEVENV_FILE;\
+	npm test
+
+e2e-test-local-graphql-server:
+	source scripts/export-env.sh $$ENV_FILE;\
+	source scripts/export-env.sh $$DEVENV_FILE;\
+	npm test:e2e
 
 DATAENV_SERVICES := mysql redis
 

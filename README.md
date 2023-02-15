@@ -41,3 +41,60 @@ Send the repository link of the project by email when finished.
 1. cmake
 
 ### 初始化
+
+#### 启动本地开发环境
+
+启动本地数据库环境
+
+```bash
+make dataenv-up
+mkdir -p $DATA_PATH/.data/mysql \
+                $DATA_PATH/.data/redis \
+
+docker compose --env-file $ENV_FILE -p $DEVENV_PROJECT_NAME -f docker-compose.yaml -f docker-compose.dataenv.yaml up -d mysql redis
+WARN[0000] The "TIMEZONE" variable is not set. Defaulting to a blank string.
+WARN[0000] The "TIMEZONE" variable is not set. Defaulting to a blank string.
+[+] Running 2/0
+ ⠿ Container multi-channel-forum-redis-1  Running
+ ⠿ Container multi-channel-forum-mysql-1  Running
+```
+
+启动本地开发服务(graphql)
+
+```bash
+make run-local-graphql-server
+source scripts/export-env.sh $ENV_FILE;\
+        source scripts/export-env.sh $DEVENV_FILE;\
+        npm start
+
+> multi-channel-forum@0.0.1 start
+> nest start
+
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [NestFactory] Starting Nest application...
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] TypeOrmModule dependencies initialized +38ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] GraphQLSchemaBuilderModule dependencies initialized +0ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] GraphQLModule dependencies initialized +0ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] TypeOrmCoreModule dependencies initialized +66ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] TypeOrmModule dependencies initialized +0ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [GraphQLModule] Mapped {/graphql, POST} route +219ms
+[Nest] 85715  - 2023/02/15 17:23:01     LOG [NestApplication] Nest application successfully started +1ms
+
+```
+
+开发完成后关闭本地数据库环境
+
+```bash
+make dataenv-down
+docker compose --env-file $ENV_FILE -p $DEVENV_PROJECT_NAME -f docker-compose.yaml -f docker-compose.dataenv.yaml down -v --remove-orphans
+[+] Running 3/2
+ ⠿ Container multi-channel-forum-redis-1 Removed
+ ⠿ Container multi-channel-forum-mysql-1 Removed
+ ⠿ Network multi-channel-forum_multi-channel-forum  Removed
+```
+
+#### 启动本地测试环境
+
+#### 启动生产环境
+
+###

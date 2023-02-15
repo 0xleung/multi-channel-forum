@@ -1,0 +1,8 @@
+FROM node:18-alpine
+WORKDIR /app
+COPY . .
+RUN npm ci
+RUN npm run test
+# RUN npm run test:e2e
+EXPOSE 3000
+CMD ["npm", "start"]
