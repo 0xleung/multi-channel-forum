@@ -58,11 +58,11 @@ devenv-logs: ## follow all devenv services logs
 devenv-ps:
 	$(_DEVENV) ps
 
-.PHONY: devenv-backend-server
-devenv-backend-server:
-	$(RUNNER) backend-server sh -c "npm start"
+.PHONY: devenv-graphql-server
+devenv-graphql-server:
+	$(RUNNER) graphql-server sh -c "npm start"
 
-run-local-backend-server:
+run-local-graphql-server:
 	source scripts/export-env.sh $$ENV_FILE;\
 	source scripts/export-env.sh $$DEVENV_FILE;\
 	npm start
