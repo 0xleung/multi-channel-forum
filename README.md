@@ -30,6 +30,7 @@ Send the repository link of the project by email when finished.
 1. 使用 cmake 管理构建和常用命令
 1. 使用 husky 检查规范提交代码和提交消息
 1. 使用 jest 做单元测试和 e2e 测试
+1. 使用 Sentry 捕捉异常
 
 ## 开始开发
 
