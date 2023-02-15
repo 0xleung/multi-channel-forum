@@ -96,7 +96,7 @@ docker compose --env-file $ENV_FILE -p $DEVENV_PROJECT_NAME -f docker-compose.ya
 ##### 接口文档
 
 graphql 自带文档属性, 在开发模式下打开了 `playground` 访问 `http://127.0.0.1:3000/graphql` 即可查看
-![文档预览](https://raw.githubusercontent.com/0xleung/multi-channel-forum/main/doc/images/doc.png)
+![文档预览](https://raw.githubusercontent.com/0xleung/multi-channel-forum/main/docs/images/doc.png)
 
 ##### 测试
 
