@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  graphql-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - multi-channel-forum
+  redis:
+    image: ${IMAGE_REDIS}
+    restart: always
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--requirepass",
+        "${REDIS_PASSWORD}",
+      ]
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ${DATA_PATH}/.data/redis:/data
+    environment:
+      - TZ=${TIMEZONE}
+    networks:
+      - multi-channel-forum
+
+  mysql:
+    image: ${IMAGE_MYSQL}
+    #    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
+    restart: always
+    volumes:
+      - ${DATA_PATH}/.data/mysql:/var/lib/mysql
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - TZ=${TIMEZONE}
+    command: --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --sql_mode=IGNORE_SPACE,NO_ENGINE_SUBSTITUTION
+      --lower_case_table_names=2
+    healthcheck:
+      test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    networks:
+      - multi-channel-forum
+
+networks:
+  multi-channel-forum:
+    driver: bridge

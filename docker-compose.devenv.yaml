@@ -1,0 +1,15 @@
+version: '3'
+services:
+  graphql-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - channel_api
+
+networks:
+  channel_api:
+    driver: bridge
