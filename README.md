@@ -93,8 +93,34 @@ docker compose --env-file $ENV_FILE -p $DEVENV_PROJECT_NAME -f docker-compose.ya
  ⠿ Network multi-channel-forum_multi-channel-forum  Removed
 ```
 
-#### 启动本地测试环境
+##### 测试
+
+单元测试
+
+```
+make test-local-graphql-server
+```
+
+e2e 测试
+
+```
+make e2e-test-local-graphql-server
+```
 
 #### 启动生产环境
 
-###
+**_正式上生产环境前还需要在 ci 端更换掉敏感环境变量的值_**
+
+启动
+
+```
+make up
+```
+
+关闭
+
+```
+make down
+```
+
+时间原因网关等相关 docker 和配置并没有加入项目,直接访问 3000 端口即可

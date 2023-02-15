@@ -32,7 +32,7 @@ export DEVENV_PROJECT_NAME
 endif
 
 _DATAENV := docker compose --env-file $$ENV_FILE -p $$DEVENV_PROJECT_NAME -f docker-compose.yaml -f docker-compose.dataenv.yaml
-_DEVENV := docker compose --env-file $$ENV_FILE -p $$DEVENV_PROJECT_NAME -f docker-compose.devenv.yaml
+# _DEVENV := docker compose --env-file $$ENV_FILE -p $$DEVENV_PROJECT_NAME -f docker-compose.devenv.yaml
 
 OS_NAME := $(shell uname -s | tr A-Z a-z)
 ifeq ($(OS_NAME), darwin)
@@ -56,7 +56,7 @@ test-local-graphql-server:
 e2e-test-local-graphql-server:
 	source scripts/export-env.sh $$ENV_FILE;\
 	source scripts/export-env.sh $$DEVENV_FILE;\
-	npm test:e2e
+	npm run test:e2e
 
 DATAENV_SERVICES := mysql redis
 
@@ -76,3 +76,24 @@ dataenv-ps:
 
 dataenv-logs:
 	$(_DATAENV) logs -f
+
+### production environment
+
+.PHONY: up
+up: _dataenv-volumes ## startup the application
+	@echo "Please execute 'make pull' first to download & upgrade all images to your machine."
+	docker compose --env-file $$ENV_FILE -p $$DEVENV_PROJECT_NAME up -d
+
+.PHONY: down
+down: ## shutdown the application
+	docker compose down -v --remove-orphans
+
+.PHONY:ps
+ps: ## docker compose ps
+	docker compose ps
+
+### docker stuffs
+
+.PHONY: pull
+pull: ## pull all containers and ready to up
+	docker compose pull

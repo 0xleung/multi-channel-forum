@@ -1,8 +1,14 @@
 import { Module, OnModuleDestroy, Logger } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import responseCachePlugin from 'apollo-server-plugin-response-cache';
+import { ApolloServerPluginCacheControl } from 'apollo-server-core/dist/plugin/cacheControl';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { redisStore } from 'cache-manager-redis-yet';
+
+import * as Keyv from 'keyv';
+import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 
 import { Channel } from './channels/channels.entity';
 import { Message } from './messages/messages.entity';
@@ -10,6 +16,16 @@ import { ChannelsResolver } from './channels/channels.resolver';
 import { ChannelsService } from './channels/channels.service';
 import { MessagesService } from './messages/messages.service';
 import { MessageResolver } from './messages/messages.resolver';
+import * as KeyvRedis from '@keyv/redis';
+import Redis from 'ioredis';
+
+const redis: Redis = new Redis({
+  port: parseInt(process.env.REDIS_PORT),
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD,
+  db: parseInt(process.env.REDIS_DB),
+});
+const keyvRedis = new KeyvRedis(redis);
 
 @Module({
   providers: [
@@ -21,12 +37,19 @@ import { MessageResolver } from './messages/messages.resolver';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      debug: false,
-      playground: true,
+      debug: process.env.NODE_ENV === 'pro' ? false : true,
+      playground: process.env.NODE_ENV === 'pro' ? false : true,
       typePaths: ['./src/schema.gql'],
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
       },
+      cache: new KeyvAdapter(new Keyv({ store: keyvRedis }), {
+        disableBatchReads: true,
+      }),
+      plugins: [
+        ApolloServerPluginCacheControl({ defaultMaxAge: 5 }), // optional
+        responseCachePlugin(),
+      ],
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -41,4 +64,10 @@ import { MessageResolver } from './messages/messages.resolver';
     TypeOrmModule.forFeature([Channel, Message]),
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleDestroy {
+  redis: Redis = redis;
+  onModuleDestroy() {
+    Logger.debug('onModuleDestroy');
+    this.redis.disconnect();
+  }
+}

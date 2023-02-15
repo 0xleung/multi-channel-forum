@@ -3,5 +3,6 @@ WORKDIR /app
 COPY . .
 RUN npm ci
 RUN npm run build
+RUN npm install pm2@latest --global
 EXPOSE 3000
-CMD ["npm", "run", "start:prod"]
+CMD ["pm2-runtime", "ecosystem.config.js"]
